@@ -1,0 +1,6 @@
+venv
+dist
+build
+*.pyc
+.DS_Store
+.idea
