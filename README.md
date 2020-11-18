@@ -1,6 +1,6 @@
 # GeekHub
 
-GeekHub statusBar App
+GeekHub statusBar App Windows
 
 [![Chat on Telegram](https://img.shields.io/badge/chat-Telegram-blueviolet?style=flat-square&logo=Telegram)](https://t.me/geekhub_app) [![Follow My Twitter](https://img.shields.io/badge/follow-Tweet-blue?style=flat-square&logo=Twitter)](https://twitter.com/LeetaoGoooo) [![Follow My Weibo](https://img.shields.io/badge/follow-Weibo-red?style=flat-square&logo=sina-weibo)](https://weibo.com/5984163100)
 
@@ -9,7 +9,6 @@ GeekHub statusBar App
 本程序依赖如下:
 
 ```
-rumps
 requests
 beautifulSoup4
 ```

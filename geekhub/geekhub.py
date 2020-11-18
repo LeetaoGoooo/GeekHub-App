@@ -1,34 +1,64 @@
-import rumps
+import wx
+import wx.adv
 from robot import Robot
 import json
 import os
 from pathlib import Path
+from threading import Thread
+import collections
+import time
 
 
-class AwesomeStatusBarApp(rumps.App):
+class GeekHubStatusBarApp(wx.adv.TaskBarIcon):
 
-    def __init__(self, name, *args, **kwargs):
-        super(AwesomeStatusBarApp, self).__init__(name, *args, **kwargs)
+    def __init__(self, icon, title, *args, **kwargs):
+        super(GeekHubStatusBarApp, self).__init__(*args, **kwargs)
+        self.setIcon(wx.Icon(icon), title)
         self.geek_hub = None
         self.molecules_timer = None
         self.check_in_timer = None
         self.msg_timer = None
         self.setting_config = {}
-        self.user_name_menu = rumps.MenuItem("用户:?")
-        self.user_score_menu = rumps.MenuItem("积分:?")
-        self.menu.add(self.user_name_menu)
-        self.menu.add(self.user_score_menu)
         self.load_settings()
+        self.init()
+
+    def init(self):
+        self.init_menu_attrs_list()
+        self.init_bind_event()
+    
+    def init_app(self):
+        self.geek_hub = Robot(self.setting_config.get("session"))
+        self.get_user_info()
+        self.check_in(silent=True)
+
+    def init_menu_attrs_list(self):
+        self.user_name_id = wx.NewId()
+        self.user_score_id = wx.NewId()
+        self.setting_id = wx.NewId()
+        self.auto_check_id = wx.NewId()
+        self.molecules_notification_id = wx.NewId()
+        self.msg_notification_id = wx.NewId()
+        self.menu_attrs = [("用户名:?", self.user_name_id), ('积分:?', self.user_score_id),
+                           ('设置', self.setting_id), ('自动签到', self.auto_check_id),
+                           ('分子提醒', self.molecules_notification_id), ('消息提醒', self.msg_notification_id)]
+
+    def init_bind_event(self):
+        self.Bind(wx.EVT_MENU, self.preferences, id = self.setting_id)
+        self.Bind(wx.EVT_MENU, self.auto_check_in, id = self.auto_check_id)
+        self.Bind(wx.EVT_MENU, self.molecules_notification, id = self.molecules_notification_id)
+        self.Bind(wx.EVT_MENU, self.msg_notification, id = self.msg_notification_id)
+
+
+    def CreatePopupMenu(self):
+        menu = wx.Menu()
+        for menu_attr in self.menu_attrs:
+            menu.Append(*menu_attr[::])
+        return menu
 
     def get_icon(self, name):
         if os.getenv("debug", False):
             return str(f'Resources/{name}.png')
         return str(f'{name}.png')
-
-    def init_app(self):
-        self.geek_hub = Robot(self.setting_config.get("session"))
-        self.get_user_info()
-        self.check_in(silent=True)
 
     def init_menu(self):
         check_in_menu = rumps.MenuItem('自动签到')
@@ -80,19 +110,19 @@ class AwesomeStatusBarApp(rumps.App):
                 rumps.notification("分子", 'geekhub', f'有新的分子待参加!',
                                    icon=self.get_icon('notification'))
 
-    @rumps.clicked("设置")
-    def preferences(self, _):
-        response = rumps.Window('输入你的 Session', cancel="取消", ok="确认").run()
-        if response.clicked:
-            if response.text.strip():
-                session = response.text
+
+    def preferences(self):
+        response = wx.TextEntryDialog(self, '输入的你的Session Id','设置')
+        response.SetValue("")
+        if response.ShowModal() == wx.ID_OK:
+            if response.GetValue().strip():
+                session = response.GetValue()
                 self.setting_config['session'] = session
                 self.save_settings()
                 self.init_app()
             else:
-                rumps.alert("session 值存在问题!", icon_path=self.get_icon('alert'))
+                wx.MessageBox('session 值存在问题!', '提示', wx.OK | wx.ICON_INFORMATION)
 
-    @rumps.clicked("自动签到")
     def auto_check_in(self, sender):
         state = not sender.state
         if not self.setting_config.get("session", False):
@@ -110,7 +140,7 @@ class AwesomeStatusBarApp(rumps.App):
             self.check_in_timer = None
         sender.state = state
 
-    @rumps.clicked("消息提醒")
+
     def msg_notification(self, sender):
         state = not sender.state
         if not self.setting_config.get("session", False):
@@ -129,7 +159,7 @@ class AwesomeStatusBarApp(rumps.App):
             self.msg_timer = None
         sender.state = state
 
-    @rumps.clicked("分子提醒")
+
     def molecules_notification(self, sender):
         """
         推送内容包含 molecule 关键词
@@ -171,5 +201,22 @@ class AwesomeStatusBarApp(rumps.App):
             self.init_app()
 
 
+class IntervalThread(Thread):
+    def __init__(self, interval=None, func=None):
+        assert isinstance(interval, int) and isinstance(
+            func, collections.Callable)
+        self.interval = interval
+        self.func = func
+        self.stoped = False
+
+    def run(self):
+        while not self.stoped:
+            self.func()
+            time.sleep(self.interval)
+
+    def stop(self):
+        pass
+
+
 if __name__ == "__main__":
-    AwesomeStatusBarApp(name='', icon='logo.icns').run()
+    GeekHubStatusBarApp(icon='logo.icns', title='').run()
