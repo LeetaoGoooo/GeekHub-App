@@ -1,20 +1,17 @@
 from setuptools import setup
 
-APP = ['geekhub/geekhub.py']
-DATA_FILES = [
-    'Resources/alert.png',
-    'Resources/notification.png',
-]
+APP = ['app.py']
+
 OPTIONS = {
     'argv_emulation': True,
     'plist': {
         'LSUIElement': True,
     },
     'packages': ['rumps'],
-    'iconfile': 'Resources/logo.icns',
+    'iconfile': 'geekhub.ico',
 }
 
-VERSION='0.1.1'
+VERSION='0.1.2'
 
 setup(
     name='geekhub',
@@ -25,9 +22,8 @@ setup(
     author_email='leetao@gmail.com',
     packges=['geekhub'],
     app=APP,
-    data_files=DATA_FILES,
     options={'py2app': OPTIONS},
-    install_requires=['requests','BeautifulSoup4','rumps'],
+    install_requires=['requests','BeautifulSoup4','pyqt5'],
     setup_requires=['py2app'],
     classifiers=[
         'Development Status :: 3 - Alpha',

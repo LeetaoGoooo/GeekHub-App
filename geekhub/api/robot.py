@@ -1,5 +1,5 @@
 import requests
-from fake_user_agent import user_agent_random
+from geekhub.common import user_agent_random
 import copy
 from bs4 import BeautifulSoup
 from collections import namedtuple
