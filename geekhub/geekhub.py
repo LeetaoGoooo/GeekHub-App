@@ -21,8 +21,6 @@ class AwesomeStatusBarApp(rumps.App):
         self.load_settings()
 
     def get_icon(self, name):
-        if os.getenv("debug", False):
-            return str(f'Resources/{name}.png')
         return str(f'{name}.png')
 
     def init_app(self):
