@@ -14,7 +14,7 @@ OPTIONS = {
     'iconfile': 'Resources/logo.icns',
 }
 
-VERSION='0.1.1'
+VERSION = '0.1.3'
 
 setup(
     name='geekhub',
@@ -27,7 +27,7 @@ setup(
     app=APP,
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
-    install_requires=['requests','BeautifulSoup4','rumps'],
+    install_requires=['requests', 'BeautifulSoup4', 'rumps'],
     setup_requires=['py2app'],
     classifiers=[
         'Development Status :: 3 - Alpha',
