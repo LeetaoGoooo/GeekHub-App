@@ -131,7 +131,7 @@ class GeekHubSystemTray(QSystemTrayIcon):
             if self.msg_timer is None:
                 self.get_msg(silent=False, interval=10 * 60)
         else:
-            if self.msg_timer is not None and self.msg_timer.isRunning() and flag is False:
+            if self.msg_timer is not None and self.msg_timer.isRunning() is False:
                 self.msg_timer.stop()
                 self.msg_timer = None
 
