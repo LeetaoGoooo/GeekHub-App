@@ -87,11 +87,45 @@ class Robot:
         return None, None
 
     def get_molecules(self, soup):
+        feed_list = self._feed_list_mode(soup)
+        media_list = self._media_list_mode(soup)
+        new_molecules_id_list = feed_list if len(media_list) == 0 else media_list
+        self.save_molecules(new_molecules_id_list)
+        return len(new_molecules_id_list)
+
+    def _feed_list_mode(self, soup):
+        """
+        列表模式
+        :param soup:
+        :return:
+        """
+        new_molecules_id_list = []
+        article_list = soup.find_all('feed')
+        for article in article_list:
+            if article.select('div:nth-child(2) > div:nth-child(1)>div:nth-child(2) > div:nth-child(2)'):
+                div = article.select('div:nth-child(2) > div:nth-child(1)>div:nth-child(2) > div:nth-child(2)')[0]
+                end = div.text.strip()
+                is_new = False if end == "已结束" else True
+                if is_new:
+                    a = article.select('div:nth-child(2) > div:nth-child(2) > a')[0]
+                    id = a['href'].split("/")[-1]
+                    if id not in self.molecules_list:
+                        new_molecules_id_list.append(id)
+
+        return new_molecules_id_list
+
+    def _media_list_mode(self, soup):
+        """
+        图片模式
+        :param soup:
+        :return:
+        """
         new_molecules_id_list = []
         article_list = soup.find_all('article')
         for article in article_list:
-            if article.find('div:nth-child(3) span:nth-child(1)'):
-                end = article.find('div:nth-child(3) span:nth-child(1)').text.strip()
+            span_list = article.select('div:nth-child(3) > span:nth-child(1)')
+            if span_list:
+                end = span_list[0].text.strip()
                 is_new = False if end == "已结束" else True
                 if is_new:
                     a = article.find("h3").find("a")
@@ -99,7 +133,7 @@ class Robot:
                     if id not in self.molecules_list:
                         new_molecules_id_list.append(id)
 
-        return len(new_molecules_id_list)
+        return new_molecules_id_list
 
     def load_molecules(self):
         if not Path('molecules.txt').exists():
