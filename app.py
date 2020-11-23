@@ -122,7 +122,7 @@ class GeekHubSystemTray(QSystemTrayIcon):
             QMessageBox.warning(None, '警告', '请先设置 Session！', QMessageBox.Yes)
             self.molecules_notification_action.setChecked(False)
             return
-        return self.__notification(state, kind='molecules')
+        return self.__notification(state, kind='molecule')
 
     def __notification(self, state, kind='msg'):
         if state:
