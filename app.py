@@ -26,11 +26,11 @@ class GeekHubSystemTray(QSystemTrayIcon):
         self.auto_check_action = QAction("自动签到", self, triggered=self.auto_check_in)
         self.auto_check_action.setCheckable(True)
         self.auto_check_action.setChecked(self.setting_config.get("check", False))
-        self.molecules_notification_action = QAction("分子提醒", self, triggered=self.msg_notification)
+        self.molecules_notification_action = QAction("分子提醒", self, triggered=self.molecules_notification)
         self.molecules_notification_action.setCheckable(True)
         self.molecules_notification_action.setChecked(self.setting_config.get("molecule", False))
         self.msg_notification_action = QAction("消息提醒", self,
-                                               triggered=self.molecules_notification)
+                                               triggered=self.msg_notification)
         self.msg_notification_action.setCheckable(True)
         self.msg_notification_action.setChecked(self.setting_config.get("msg", False))
         self.refresh_action = QAction("刷新", self, triggered=self.refresh)
@@ -61,7 +61,8 @@ class GeekHubSystemTray(QSystemTrayIcon):
             self.msg_timer.msg_trigger.connect(self.msg_callback)
             self.msg_timer.start()
         else:
-            self.tmp_msg_worker = MsgWorker(session_id=self.setting_config.get("session", None), interval=0, silent=silent)
+            self.tmp_msg_worker = MsgWorker(session_id=self.setting_config.get("session", None), interval=0,
+                                            silent=silent)
             self.tmp_msg_worker.msg_trigger.connect(self.msg_callback)
             self.tmp_msg_worker.start()
 
@@ -78,8 +79,9 @@ class GeekHubSystemTray(QSystemTrayIcon):
             self.check_in_timer.msg_trigger.connect(self.msg_callback)
             self.check_in_timer.start()
         else:
-            self.tmp_check_in_worker = CheckWorker(session_id=self.setting_config.get("session", None), interval=interval,
-                                          silent=silent)
+            self.tmp_check_in_worker = CheckWorker(session_id=self.setting_config.get("session", None),
+                                                   interval=interval,
+                                                   silent=silent)
             self.tmp_check_in_worker.msg_trigger.connect(self.msg_callback)
             self.tmp_check_in_worker.start()
 
@@ -87,7 +89,7 @@ class GeekHubSystemTray(QSystemTrayIcon):
         session, ok_pressed = QInputDialog.getText(None, "设置", "输入你的Session Id", QLineEdit.Normal, "")
         if ok_pressed:
             if session.strip():
-                self.setting_config['session'] = session
+                self.setting_config['session'] = session.strip()
                 self.save_settings()
                 self.init_app()
             else:
@@ -98,37 +100,31 @@ class GeekHubSystemTray(QSystemTrayIcon):
             QMessageBox.warning(None, '警告', '请先设置 Session！', QMessageBox.Yes)
             self.auto_check_action.setChecked(False)
             return
-
-        if state:
-            self.setting_config['check'] = state
-            self.save_settings()
-            self.check_in(silent=False, interval=12 * 3600)
         else:
-            if self.check_in_timer is not None and self.check_in_timer.isRunning():
-                self.check_in_timer.stop()
-            self.check_in_timer = None
+            if state:
+                self.setting_config['check'] = state
+                self.save_settings()
+                self.check_in(silent=False, interval=12 * 3600)
+            else:
+                if self.check_in_timer is not None and self.check_in_timer.isRunning():
+                    self.check_in_timer.stop()
+                self.check_in_timer = None
 
     def msg_notification(self, state):
-        return self.__notification(state,kind='msg')
+        if not self.setting_config.get("session", False):
+            QMessageBox.warning(None, '警告', '请先设置 Session！', QMessageBox.Yes)
+            self.msg_notification_action.setChecked(False)
+            return
+        return self.__notification(state, kind='msg')
 
     def molecules_notification(self, state):
+        if not self.setting_config.get("session", False):
+            QMessageBox.warning(None, '警告', '请先设置 Session！', QMessageBox.Yes)
+            self.molecules_notification_action.setChecked(False)
+            return
         return self.__notification(state, kind='molecules')
 
     def __notification(self, state, kind='msg'):
-        flag = False
-
-        if kind == 'msg':
-            flag = self.setting_config.get("molecules")
-        else:
-            flag = self.setting_config.get("msg")
-
-        if not self.setting_config.get("session", False):
-            QMessageBox.warning(None, '警告', '请先设置 Session！', QMessageBox.Yes)
-            if kind == 'msg':
-                self.msg_notification_action.setChecked(False)
-            else:
-                self.molecules_notification_action.setChecked(False)
-            return
         if state:
             self.setting_config[kind] = state
             self.save_settings()
@@ -140,6 +136,9 @@ class GeekHubSystemTray(QSystemTrayIcon):
                 self.msg_timer = None
 
     def refresh(self):
+        if not self.setting_config.get("session", False):
+            QMessageBox.warning(None, '警告', '请先设置 Session！', QMessageBox.Yes)
+            return
         self.check_in(silent=True, interval=0)
         self.get_user_info()
         self.get_msg(silent=False, interval=0)
@@ -169,7 +168,6 @@ class GeekHubSystemTray(QSystemTrayIcon):
         msg_type = resp.get("type")
         content = resp.get("msg")
         silent = resp.get("silent", False)
-        print(f'type:{msg_type} callback, resp:{resp}')
         if content is None or content is False:
             QMessageBox.warning(None, "警告", "session过期或获取失败", QMessageBox.Yes)
             return
