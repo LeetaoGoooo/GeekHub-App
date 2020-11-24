@@ -51,7 +51,7 @@ class GeekHubSystemTray(QSystemTrayIcon):
             self.msg_timer.msg_trigger.connect(self.msg_callback)
             self.msg_timer.start()
         if self.setting_config.get("check"):
-            self.check_in(silent=False, interval=10 * 60)
+            self.check_in(silent=False, interval=12 * 3600)
 
     def get_msg(self, silent, interval):
         assert isinstance(silent, bool) and isinstance(interval, int)
