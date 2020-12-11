@@ -18,7 +18,7 @@ class Robot:
         self.domain = 'https://geekhub.com'
         self.comment_url = 'https://geekhub.com/comments'
         self.headers = {"Origin": "https://geekhub.com",
-                        "Host": "geekhub.com", "User-Agent": self.user_agent}
+                        "Host": "www.geekhub.com", "User-Agent": self.user_agent}
         self.check_in_url = 'https://geekhub.com/checkins/start'
         self.molecules_list = self.load_molecules()
 
