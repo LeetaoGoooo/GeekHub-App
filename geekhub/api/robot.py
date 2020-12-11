@@ -17,8 +17,7 @@ class Robot:
             self.session.cookies, {"_session_id": cookies})
         self.domain = 'https://geekhub.com'
         self.comment_url = 'https://geekhub.com/comments'
-        self.headers = {"Origin": "https://geekhub.com",
-                        "Host": "geekhub.com", "User-Agent": self.user_agent}
+        self.headers = {"Host": "www.geekhub.com", "User-Agent": self.user_agent}
         self.check_in_url = 'https://geekhub.com/checkins/start'
         self.molecules_list = self.load_molecules()
 
@@ -151,6 +150,6 @@ class Robot:
 
 if __name__ == '__main__':
     robot = Robot(
-        'mkaduq5yv7tlse%2BGdUB5vq3Ev7V%2BJBM8dUjYy117ReOGXBp1PyGZHbLXfWUHcGjx7ENb3ONFew%2BwMZVV6%2BzRxX5hbndbiyaAx8ScPWN52Dso9mpn18AaxB%2B085981Y2w9%2FR5LI6%2BD7JB0a%2BH5b%2BiON8xyw6ndjfJkq7T0mhH1GiUVK%2FuvH99U7mIKcw%2B1Qytjv3NF4bJlowgoyfYpL9yG%2FY9JWvyBoO6LTwWTaisNpqL0iRP1DpiF7TzKYmlmYN%2B0g6nwW5EtJaSsn4YFx3xudxEJmX8%2FRr58l6%2F6Q9M6PQL3CdQEdVpKWDov%2ByILaXanif58gLsq9oMmR72IXl7mMs2K4dbijcVL%2B602oQPtaExHjPMVPgq2%2FgT9E%2BLOqg1mX%2Fe7AQQp4A9WXla%2F8RL7o3ri430H80Ut07hmrDIFoduVpUFz5W5cj%2BulIgGE3PZwR4Jqasj%2F%2F%2Bk76RtJ64pnbyUPK8f--xXynCRm9q0xv7Ngg--VeEZ%2FKzVuK8%2BwrOOOuJ%2FTQ%3D%3D')
+        'jghjutCIQ%2BVjsnvnN1TsXBAQCVAAGZ8vkZU7QDf50wKUMkAiBV9hJWaA67l%2FrLsBUoQOPh5R1IpzLOrhZI2faIum%2Ba6ZmF%2FiKajdU2fxROfZ7UoRT9Dyoj9OzZfxHbsLhZh189MKc8gSQ9h78puruHnvPOVmWItfo5Bw%2B2Xuljxjeu39Ur1tSRaUdEarZJjCe%2BCf3uc4YSPZ8IZlp%2FUpNrOnBULM7LL8pjshpYunVnQ%2FZyM%2FvkuAYr1RTPGbzr6aXEe%2FhaxGa1PVrAQHMqObOR21lMn94v4SzMvg4LPt1Ku9Hl0%2BxpzDH0LnSY%2FjZg8bC5kMu1%2BvYQV2aH%2BjdxeJ3iTc08VsA0X0WwUPmeZRxc47yMXlvR4k0alyXI3Im75U1JurUCze%2F%2BCMzXug1lSbsyoDqbmSjztlnD4OhfcfM%2FKuA2fsC5dk1A242h0RRtb57hYlWXc%2Fh7FFnS1yApkP%2FS6ZaxxEMnaNyJuwzcpDuSmY--wMaDRw5y88obIX%2BL--%2FnTiLRJ5lr%2FHgDGqWGq0SQ%3D%3D')
     # print(robot.check_in())
-    print(robot.get_msg())
+    print(robot.check_in())
